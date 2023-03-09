@@ -9,3 +9,4 @@ This tool is an aid for efficient analysis of calculated fields in Tableau. You 
 7. Move the cursor to the calculated field for which you want to display a new window and press the F3 key.
 8. The target calculated field window will then be newly launched.
 9. Please watch the video to see how it has been done so far.
+https://youtu.be/7o7OjOqTC5A
