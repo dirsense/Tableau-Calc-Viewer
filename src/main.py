@@ -1,4 +1,4 @@
-from calc_analyzer import CalcAnalyzer as ca
+from calc_viewer import CalcViewer as cv
 import field_utility as fu
 import sg_utility as sgu
 import PySimpleGUI as sg
@@ -16,28 +16,28 @@ class Receive():
             if keyboard.is_pressed('F3'):
                 dsname, finame = fu.get_field()
                 fikey = finame.strip('[]')
-                if dsname != ca.primary_caption:
+                if dsname != cv.primary_caption:
                     fikey += ' (' + dsname.strip('[]') + ')'
 
-                if fikey in ca.fields:
+                if fikey in cv.fields:
                     self.window.write_event_value('-qpop-', 'This field is already open')
                 else:
-                    if dsname in ca.tabdoc.fcap_field and finame in ca.tabdoc.fcap_field[dsname]:
-                        f = ca.tabdoc.fcap_field[dsname][finame]
+                    if dsname in cv.tabdoc.fcap_field and finame in cv.tabdoc.fcap_field[dsname]:
+                        f = cv.tabdoc.fcap_field[dsname][finame]
                         if f.calculation is None:
                             self.window.write_event_value('-qpop-', 'This field is not calculated field')
                         else:
-                            calc = ca.tabdoc.replace_calc_field_id_to_caption(f.calculation, ca.tabdoc.dscap_dsid[dsname])
+                            calc = cv.tabdoc.replace_calc_field_id_to_caption(f.calculation, cv.tabdoc.dscap_dsid[dsname])
                             self.window.write_event_value('-cpop-', (fikey, calc))
 
-                    elif finame in ca.tabdoc.pcap_pid:
+                    elif finame in cv.tabdoc.pcap_pid:
                         self.window.write_event_value('-qpop-', 'This field is Parameter')
                     else:
                         self.window.write_event_value('-qpop-', 'This field was not found in the scanned document')
                 time.sleep(1)
 
             elif keyboard.is_pressed('F4'):
-                self.window.write_event_value('-all_ca_close-', None)
+                self.window.write_event_value('-all_cv_close-', None)
                 time.sleep(1)
 
     def start(self):
@@ -79,8 +79,8 @@ if __name__ == '__main__':
         ], pad=(0, 0))]
     ]
 
-    window = sg.Window('Tableau Calc Analyzer', layout, finalize=True)
-    ca.window = window
+    window = sg.Window('Tableau Calc Viewer', layout, finalize=True)
+    cv.window = window
 
     opening = True
 
@@ -92,30 +92,30 @@ if __name__ == '__main__':
             startEvent(window)
 
         if event is None:
-            if window == ca.window:
+            if window == cv.window:
                 finishEvent()
             else:
                 window.close()
-                del ca.fields[window.Title]
+                del cv.fields[window.Title]
 
         elif event == 'Scan':
-            ca.scan(values)
+            cv.scan(values)
 
         elif event == '-cpop-':
-            ca.initialize(values[event])
+            cv.initialize(values[event])
 
         elif event == '-qpop-':
             sgu.popup_quick(values[event])
 
         elif event == '-primaryDS-':
-            ca.primary_caption = values[event]
+            cv.primary_caption = values[event]
 
         elif event == 'Reload Current Path':
             cur_value, cur_paths = get_current_paths()
             window['-twbpath-'].update(value=cur_value, values=cur_paths)
 
-        elif event == '-all_ca_close-':
-            for fi in ca.fields.values():
-                if fi.window != ca.window:
+        elif event == '-all_cv_close-':
+            for fi in cv.fields.values():
+                if fi.window != cv.window:
                     fi.window.close()
-            ca.fields.clear()
+            cv.fields.clear()
