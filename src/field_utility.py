@@ -1,4 +1,4 @@
-from calc_analyzer import CalcAnalyzer as ca
+from calc_viewer import CalcViewer as cv
 from win32gui import GetWindowText, GetForegroundWindow, GetClassName
 import pyautogui as ag
 import re, time
@@ -12,7 +12,7 @@ def get_field() -> tuple[str, str]:
     if win_class[:2] == 'Qt':
         dsname, finame = get_field_in_qtform(win_title)
 
-    elif win_class[:2] == 'Tk' and win_title in ca.fields:
+    elif win_class[:2] == 'Tk' and win_title in cv.fields:
         dsname, finame = get_field_in_tkform(win_title)
 
     return dsname, finame
@@ -28,7 +28,7 @@ def get_field_in_qtform(win_title: str) -> tuple[str, str]:
     clip_field = win32clipboard.GetClipboardData()
     win32clipboard.CloseClipboard()
 
-    dsname = ca.primary_caption
+    dsname = cv.primary_caption
     ptn = re.findall('\[.+?\]', clip_field)
     finame = ''
 
@@ -51,7 +51,7 @@ def get_field_in_qtform(win_title: str) -> tuple[str, str]:
     return dsname, finame
 
 def get_field_in_tkform(win_title: str) -> tuple[str, str]:
-    cf = ca.fields[win_title]
+    cf = cv.fields[win_title]
     calc = cf.calc
     tk_cursor_pos = str(cf.window['-mline-'].Widget.index('insert')).split('.')
 
@@ -90,7 +90,7 @@ def get_field_in_tkform(win_title: str) -> tuple[str, str]:
         field_name = left_part + right_part
 
     if blend_name == '':
-        ds_name = ca.primary_caption
+        ds_name = cv.primary_caption
     else:
         ds_name = blend_name
     
@@ -109,4 +109,3 @@ def OpenClipboardWithEvilRetries(retries=10, delay=0.1):
                 raise
             retries -= 1
             time.sleep(delay)
-
